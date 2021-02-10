@@ -1,0 +1,211 @@
+postgresql-13 (13.2-1) unstable; urgency=medium
+
+  * New upstream version.
+
+    + Fix failure to check per-column SELECT privileges in some join queries
+      (Tom Lane)
+
+      In some cases involving joins, the parser failed to record all the
+      columns read by a query in the column-usage bitmaps that are used for
+      permissions checking.  Although the executor would still insist on some
+      sort of SELECT privilege to run the query, this meant that a user having
+      SELECT privilege on only one column of a table could nonetheless read
+      all its columns through a suitably crafted query.
+
+      A stored view that is subject to this problem will have incomplete
+      column-usage bitmaps, and thus permissions will still not be enforced
+      properly on the view after updating.  In installations that depend on
+      column-level permissions for security, it is recommended to CREATE OR
+      REPLACE all user-defined views to cause them to be re-parsed.
+
+      The PostgreSQL Project thanks Sven Klemm for reporting this problem.
+      (CVE-2021-20229)
+
+    + Fix information leakage in constraint-violation error messages
+      (Heikki Linnakangas)
+
+      If an UPDATE command attempts to move a row to a different partition but
+      finds that it violates some constraint on the new partition, and the
+      columns in that partition are in different physical positions than in
+      the parent table, the error message could reveal the contents of columns
+      that the user does not have SELECT privilege on. (CVE-2021-3393)
+
+    + Fix incorrect detection of concurrent page splits while inserting into a
+      GiST index (Heikki Linnakangas)
+
+      Concurrent insertions could lead to a corrupt index with entries placed
+      in the wrong pages.  It's recommended to reindex any GiST index that's
+      been subject to concurrent insertions.
+
+    + Fix CREATE INDEX CONCURRENTLY to wait for concurrent prepared
+      transactions (Andrey Borodin)
+
+      At the point where CREATE INDEX CONCURRENTLY waits for all concurrent
+      transactions to complete so that it can see rows they inserted, it must
+      also wait for all prepared transactions to complete, for the same
+      reason.  Its failure to do so meant that rows inserted by prepared
+      transactions might be omitted from the new index, causing queries
+      relying on the index to miss such rows. In installations that have
+      enabled prepared transactions (max_prepared_transactions > 0), it's
+      recommended to reindex any concurrently-built indexes in case this
+      problem occurred when they were built.
+
+  [ Christoph Berg ]
+  * Remove obsolete --enable-integer-datetimes configure option.
+    (Closes: #974988)
+  * Modernize server package description.
+  * Use xsltproc --nonet.
+  * run-testsuite: Test only this version.
+
+  [ Helmut Grohne ]
+  * Reduce Build-Depends: (Closes: #979456)
+    + gdb is only used for testing.
+
+ -- Christoph Berg <myon@debian.org>  Wed, 10 Feb 2021 17:33:55 +0100
+
+postgresql-13 (13.1-1) unstable; urgency=medium
+
+  * New upstream version.
+    + Fixes timetz regression test failures. (Closes: #974063)
+
+    + Block DECLARE CURSOR ... WITH HOLD and firing of deferred triggers
+      within index expressions and materialized view queries (Noah Misch)
+
+      This is essentially a leak in the security restricted operation sandbox
+      mechanism.  An attacker having permission to create non-temporary SQL
+      objects could parlay this leak to execute arbitrary SQL code as a
+      superuser.
+
+      The PostgreSQL Project thanks Etienne Stalmans for reporting this
+      problem. (CVE-2020-25695)
+
+    + Fix usage of complex connection-string parameters in pg_dump,
+      pg_restore, clusterdb, reindexdb, and vacuumdb (Tom Lane)
+
+      The -d parameter of pg_dump and pg_restore, or the --maintenance-db
+      parameter of the other programs mentioned, can be a connection string
+      containing multiple connection parameters rather than just a database
+      name.  In cases where these programs need to initiate additional
+      connections, such as parallel processing or processing of multiple
+      databases, the connection string was forgotten and just the basic
+      connection parameters (database name, host, port, and username) were
+      used for the additional connections.  This could lead to connection
+      failures if the connection string included any other essential
+      information, such as non-default SSL or GSS parameters. Worse, the
+      connection might succeed but not be encrypted as intended, or be
+      vulnerable to man-in-the-middle attacks that the intended connection
+      parameters would have prevented. (CVE-2020-25694)
+
+    + When psql's \connect command re-uses connection parameters, ensure that
+      all non-overridden parameters from a previous connection string are
+      re-used (Tom Lane)
+
+      This avoids cases where reconnection might fail due to omission of
+      relevant parameters, such as non-default SSL or GSS options. Worse, the
+      reconnection might succeed but not be encrypted as intended, or be
+      vulnerable to man-in-the-middle attacks that the intended connection
+      parameters would have prevented. This is largely the same problem as
+      just cited for pg_dump et al, although psql's behavior is more complex
+      since the user may intentionally override some connection parameters.
+      (CVE-2020-25694)
+
+    + Prevent psql's \gset command from modifying specially-treated variables
+      (Noah Misch)
+
+      \gset without a prefix would overwrite whatever variables the server
+      told it to.  Thus, a compromised server could set specially-treated
+      variables such as PROMPT1, giving the ability to execute arbitrary shell
+      code in the user's session.
+
+      The PostgreSQL Project thanks Nick Cleaton for reporting this problem.
+      (CVE-2020-25696)
+
+  * Show only log files on failure.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 10 Nov 2020 13:45:55 +0100
+
+postgresql-13 (13.0-6) unstable; urgency=medium
+
+  * Use readline instead of libedit in psql. OpenSSL is considered a system
+    library now which voids the GPL-2 linking conflict.
+    http://meetbot.debian.net/debian-ftp/2020/debian-ftp.2020-03-13-20.02.html
+  * Disable JIT on powerpc riscv64 sparc64 again.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 20 Oct 2020 10:51:32 +0200
+
+postgresql-13 (13.0-5) unstable; urgency=medium
+
+  * Bump LLVM version to 11.
+  * Enable JIT on powerpc riscv64 s390x sparc64.
+  * Cherry-pick upstream llvmjit fixes, thanks Andres!
+
+ -- Christoph Berg <myon@debian.org>  Fri, 16 Oct 2020 11:07:06 +0200
+
+postgresql-13 (13.0-4) unstable; urgency=medium
+
+  * Add extension_destdir to postgresql.conf.sample file.
+  * R³: no.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 13 Oct 2020 22:05:47 +0200
+
+postgresql-13 (13.0-3) unstable; urgency=medium
+
+  * extension_destdir: Allow ALTER EXTENSION ... UPDATE;
+
+ -- Christoph Berg <myon@debian.org>  Thu, 08 Oct 2020 00:16:33 +0200
+
+postgresql-13 (13.0-2) unstable; urgency=medium
+
+  * Force JITing of all queries at test time.
+  * Disable JIT on s390x, it's broken with LLVM 10.
+    https://www.postgresql.org/message-id/20200925152907.GI293907%40msg.df7cb.de
+
+ -- Christoph Berg <myon@debian.org>  Fri, 25 Sep 2020 23:43:22 +0200
+
+postgresql-13 (13.0-1) unstable; urgency=medium
+
+  * First PostgreSQL 13 stable release.
+  * Update extension_destdir to look both in destdir and original location.
+  * Drop build-time kerberos test, too unstable.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 24 Sep 2020 12:00:45 +0200
+
+postgresql-13 (13~rc1-1) experimental; urgency=medium
+
+  * Release candidate.
+  * New GUC extension_destdir: Path to prepend for extension loading
+
+    This directory is prepended to paths when loading extensions (control
+    and SQL files), and to the '$libdir' directive when loading modules that
+    back functions. The location is made configurable to allow build-time
+    testing of extensions that do not have been installed to their proper
+    location yet.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 15 Sep 2020 22:56:40 +0200
+
+postgresql-13 (13~beta3-1) experimental; urgency=medium
+
+  * New beta release.
+  * Extend lintian overrides to client, plperl, and pltcl.
+
+ -- Christoph Berg <myon@debian.org>  Thu, 16 Jul 2020 13:23:46 +0200
+
+postgresql-13 (13~beta2-2) experimental; urgency=medium
+
+  * Drop ldap-utils and slapd from build-dependencies while the "extra" ldap
+    test isn't run.
+  * Print backtrace from coredumps at build-time when tests crash.
+
+ -- Christoph Berg <myon@debian.org>  Wed, 15 Jul 2020 17:14:45 +0200
+
+postgresql-13 (13~beta2-1) experimental; urgency=medium
+
+  * New beta release.
+
+ -- Christoph Berg <myon@debian.org>  Wed, 24 Jun 2020 16:19:12 +0200
+
+postgresql-13 (13~beta1-1) experimental; urgency=medium
+
+  * New major upstream version 13; packaging based on postgresql-12.
+
+ -- Christoph Berg <myon@debian.org>  Tue, 19 May 2020 15:22:03 +0200
