@@ -11,7 +11,7 @@ Standards-Version: 4.5.0
 Rules-Requires-Root: no
 Build-Depends:
  bison,
- debhelper-compat (= 13),
+ debhelper-compat (= 12),
  dh-exec (>= 0.13~),
  docbook-xml,
  docbook-xsl (>= 1.77),
