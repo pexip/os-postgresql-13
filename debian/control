@@ -11,7 +11,6 @@ Standards-Version: 4.5.0
 Rules-Requires-Root: no
 Build-Depends:
  bison,
- clang-11 [!alpha !hppa !hurd-i386 !ia64 !kfreebsd-amd64 !kfreebsd-i386 !m68k !powerpc !riscv64 !sh4 !sparc64 !x32],
  debhelper-compat (= 13),
  dh-exec (>= 0.13~),
  docbook-xml,
@@ -34,7 +33,6 @@ Build-Depends:
  libxml2-dev,
  libxml2-utils,
  libxslt1-dev,
- llvm-11-dev [!alpha !hppa !hurd-i386 !ia64 !kfreebsd-amd64 !kfreebsd-i386 !m68k !powerpc !riscv64 !sh4 !sparc64 !x32],
  perl (>= 5.8),
  pkg-config,
  python3-dev,
@@ -197,9 +195,7 @@ Package: postgresql-server-dev-13
 Architecture: any
 Section: libdevel
 Depends:
- clang-11 [!alpha !hppa !hurd-i386 !ia64 !kfreebsd-amd64 !kfreebsd-i386 !m68k !powerpc !riscv64 !sh4 !sparc64 !x32],
  libpq-dev (>= 13~~),
- llvm-11-dev [!alpha !hppa !hurd-i386 !ia64 !kfreebsd-amd64 !kfreebsd-i386 !m68k !powerpc !riscv64 !sh4 !sparc64 !x32],
  postgresql-client-13,
  postgresql-common (>= 142~),
  ${misc:Depends},
