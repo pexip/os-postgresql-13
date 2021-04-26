@@ -29,7 +29,7 @@ Build-Depends:
  libperl-dev,
  libreadline-dev,
  libselinux1-dev [linux-any],
- libssl-dev,
+ libssl1.0-dev,
  libsystemd-dev [linux-any],
  libxml2-dev,
  libxml2-utils,
@@ -142,7 +142,6 @@ Depends:
  locales | locales-all,
  postgresql-client-13,
  postgresql-common (>= 182~),
- ssl-cert,
  tzdata,
  ${misc:Depends},
  ${shlibs:Depends}
