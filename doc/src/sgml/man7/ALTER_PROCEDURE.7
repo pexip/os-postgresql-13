@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "ALTER PROCEDURE" "7" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "ALTER PROCEDURE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -41,7 +41,7 @@ ALTER PROCEDURE \fIname\fR [ ( [ [ \fIargmode\fR ] [ \fIargname\fR ] \fIargtype\
 ALTER PROCEDURE \fIname\fR [ ( [ [ \fIargmode\fR ] [ \fIargname\fR ] \fIargtype\fR [, \&.\&.\&.] ] ) ]
     SET SCHEMA \fInew_schema\fR
 ALTER PROCEDURE \fIname\fR [ ( [ [ \fIargmode\fR ] [ \fIargname\fR ] \fIargtype\fR [, \&.\&.\&.] ] ) ]
-    DEPENDS ON EXTENSION \fIextension_name\fR
+    [ NO ] DEPENDS ON EXTENSION \fIextension_name\fR
 
 where \fIaction\fR is one of:
 

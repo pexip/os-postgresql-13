@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "CREATE INDEX" "7" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "CREATE INDEX" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -238,7 +238,7 @@ fillfactor (integer)
 The fillfactor for an index is a percentage that determines how full the index method will try to pack index pages\&. For B\-trees, leaf pages are filled to this percentage during initial index build, and also when extending the index at the right (adding new largest key values)\&. If pages subsequently become completely full, they will be split, leading to gradual degradation in the index\*(Aqs efficiency\&. B\-trees use a default fillfactor of 90, but any integer value from 10 to 100 can be selected\&. If the table is static then fillfactor 100 is best to minimize the index\*(Aqs physical size, but for heavily updated tables a smaller fillfactor is better to minimize the need for page splits\&. The other index methods use fillfactor in different but roughly analogous ways; the default fillfactor varies between methods\&.
 .RE
 .PP
-B\-tree indexes also accept these parameters:
+B\-tree indexes additionally accept this parameter:
 .PP
 deduplicate_items (boolean)
 .RS 4
@@ -273,12 +273,6 @@ off via
 prevents future insertions from triggering deduplication, but does not in itself make existing posting list tuples use the standard tuple representation\&.
 .sp .5v
 .RE
-.RE
-.PP
-vacuum_cleanup_index_scale_factor (floating point)
-.RS 4
-Per\-index value for
-vacuum_cleanup_index_scale_factor\&.
 .RE
 .PP
 GiST indexes additionally accept this parameter:

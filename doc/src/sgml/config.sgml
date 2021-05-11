@@ -2853,7 +2853,7 @@ include_dir 'conf.d'
         Not all of these choices are available on all platforms.
         The default is the first method in the above list that is supported
         by the platform, except that <literal>fdatasync</literal> is the default on
-        Linux.  The default is not necessarily ideal; it might be
+        Linux and FreeBSD.  The default is not necessarily ideal; it might be
         necessary to change this setting or other aspects of your system
         configuration in order to create a crash-safe configuration or
         achieve optimal performance.
@@ -3891,6 +3891,17 @@ restore_command = 'copy "C:\\server\\archivedir\\%f" "%p"'  # Windows
          to <literal>replica</literal> or higher to allow replication slots to
          be used.
         </para>
+
+        <para>
+         On the subscriber side, specifies how many replication origins (see
+         <xref linkend="replication-origins"/>) can be tracked simultaneously,
+         effectively limiting how many logical replication subscriptions can
+         be created on the server. Setting it a lower value than the current
+         number of tracked replication origins (reflected in
+         <link linkend="view-pg-replication-origin-status">pg_replication_origin_status</link>,
+         not <link linkend="catalog-pg-replication-origin">pg_replication_origin</link>)
+         will prevent the server from starting.
+        </para>
        </listitem>
       </varlistentry>
 
@@ -4185,8 +4196,9 @@ ANY <replaceable class="parameter">num_sync</replaceable> ( <replaceable class="
      <title>Standby Servers</title>
 
      <para>
-      These settings control the behavior of a standby server that is
-      to receive replication data.  Their values on the master server
+      These settings control the behavior of a
+      <link linkend="standby-server-operation">standby server</link>
+      that is to receive replication data.  Their values on the master server
       are irrelevant.
      </para>
 
@@ -7925,8 +7937,7 @@ COPY postgres_log FROM '/full/path/to/logfile.csv' WITH csv;
        <para>
         This variable specifies the default tablespace in which to create
         objects (tables and indexes) when a <command>CREATE</command> command does
-        not explicitly specify a tablespace.  It also determines the tablespace
-        that a partitioned relation will direct future partitions to.
+        not explicitly specify a tablespace.
        </para>
 
        <para>
@@ -7948,6 +7959,14 @@ COPY postgres_log FROM '/full/path/to/logfile.csv' WITH csv;
         This variable is also not used when creating databases.
         By default, a new database inherits its tablespace setting from
         the template database it is copied from.
+       </para>
+
+       <para>
+        If this parameter is set to a value other than the empty string
+        when a partitioned table is created, the partitioned table's
+        tablespace will be set to that value, which will be used as
+        the default tablespace for partitions created in the future,
+        even if <varname>default_tablespace</varname> has changed since then.
        </para>
 
        <para>
@@ -8335,47 +8354,6 @@ COPY postgres_log FROM '/full/path/to/logfile.csv' WITH csv;
         autovacuums.
         For more information see <xref linkend="vacuum-for-multixact-wraparound"/>.
        </para>
-      </listitem>
-     </varlistentry>
-
-     <varlistentry id="guc-vacuum-cleanup-index-scale-factor" xreflabel="vacuum_cleanup_index_scale_factor">
-      <term><varname>vacuum_cleanup_index_scale_factor</varname> (<type>floating point</type>)
-      <indexterm>
-       <primary><varname>vacuum_cleanup_index_scale_factor</varname></primary>
-       <secondary>configuration parameter</secondary>
-      </indexterm>
-      </term>
-      <listitem>
-       <para>
-        Specifies the fraction of the total number of heap tuples counted in
-        the previous statistics collection that can be inserted without
-        incurring an index scan at the <command>VACUUM</command> cleanup stage.
-        This setting currently applies to B-tree indexes only.
-       </para>
-
-       <para>
-        If no tuples were deleted from the heap, B-tree indexes are still
-        scanned at the <command>VACUUM</command> cleanup stage when at least one
-        of the following conditions is met: the index statistics are stale, or
-        the index contains deleted pages that can be recycled during cleanup.
-        Index statistics are considered to be stale if the number of newly
-        inserted tuples exceeds the <varname>vacuum_cleanup_index_scale_factor</varname>
-        fraction of the total number of heap tuples detected by the previous
-        statistics collection. The total number of heap tuples is stored in
-        the index meta-page. Note that the meta-page does not include this data
-        until <command>VACUUM</command> finds no dead tuples, so B-tree index
-        scan at the cleanup stage can only be skipped if the second and
-        subsequent <command>VACUUM</command> cycles detect no dead tuples.
-       </para>
-
-       <para>
-        The value can range from <literal>0</literal> to
-        <literal>10000000000</literal>.
-        When <varname>vacuum_cleanup_index_scale_factor</varname> is set to
-        <literal>0</literal>, index scans are never skipped during
-        <command>VACUUM</command> cleanup. The default value is <literal>0.1</literal>.
-       </para>
-
       </listitem>
      </varlistentry>
 
