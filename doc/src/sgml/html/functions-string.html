@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>9.4. String Functions and Operators</title><link rel="stylesheet" type="text/css" href="stylesheet.css" /><link rev="made" href="pgsql-docs@lists.postgresql.org" /><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="prev" href="functions-math.html" title="9.3. Mathematical Functions and Operators" /><link rel="next" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators" /></head><body id="docContent" class="container-fluid col-10"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="5" align="center">9.4. String Functions and Operators</th></tr><tr><td width="10%" align="left"><a accesskey="p" href="functions-math.html" title="9.3. Mathematical Functions and Operators">Prev</a> </td><td width="10%" align="left"><a accesskey="u" href="functions.html" title="Chapter 9. Functions and Operators">Up</a></td><th width="60%" align="center">Chapter 9. Functions and Operators</th><td width="10%" align="right"><a accesskey="h" href="index.html" title="PostgreSQL 13.3 Documentation">Home</a></td><td width="10%" align="right"> <a accesskey="n" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators">Next</a></td></tr></table><hr></hr></div><div class="sect1" id="FUNCTIONS-STRING"><div class="titlepage"><div><div><h2 class="title" style="clear: both">9.4. String Functions and Operators</h2></div></div></div><div class="toc"><dl class="toc"><dt><span class="sect2"><a href="functions-string.html#FUNCTIONS-STRING-FORMAT">9.4.1. <code class="function">format</code></a></span></dt></dl></div><p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>9.4. String Functions and Operators</title><link rel="stylesheet" type="text/css" href="stylesheet.css" /><link rev="made" href="pgsql-docs@lists.postgresql.org" /><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="prev" href="functions-math.html" title="9.3. Mathematical Functions and Operators" /><link rel="next" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators" /></head><body id="docContent" class="container-fluid col-10"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="5" align="center">9.4. String Functions and Operators</th></tr><tr><td width="10%" align="left"><a accesskey="p" href="functions-math.html" title="9.3. Mathematical Functions and Operators">Prev</a> </td><td width="10%" align="left"><a accesskey="u" href="functions.html" title="Chapter 9. Functions and Operators">Up</a></td><th width="60%" align="center">Chapter 9. Functions and Operators</th><td width="10%" align="right"><a accesskey="h" href="index.html" title="PostgreSQL 13.4 Documentation">Home</a></td><td width="10%" align="right"> <a accesskey="n" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators">Next</a></td></tr></table><hr></hr></div><div class="sect1" id="FUNCTIONS-STRING"><div class="titlepage"><div><div><h2 class="title" style="clear: both">9.4. String Functions and Operators</h2></div></div></div><div class="toc"><dl class="toc"><dt><span class="sect2"><a href="functions-string.html#FUNCTIONS-STRING-FORMAT">9.4.1. <code class="function">format</code></a></span></dt></dl></div><p>
     This section describes functions and operators for examining and
     manipulating string values.  Strings in this context include values
     of the types <code class="type">character</code>, <code class="type">character varying</code>,
@@ -187,8 +187,9 @@
         → <code class="returnvalue">integer</code>
        </p>
        <p>
-        Returns starting index of specified <em class="parameter"><code>substring</code></em>
-        within <em class="parameter"><code>string</code></em>, or zero if it's not present.
+        Returns first starting index of the specified
+        <em class="parameter"><code>substring</code></em> within
+        <em class="parameter"><code>string</code></em>, or zero if it's not present.
        </p>
        <p>
         <code class="literal">position('om' in 'Thomas')</code>
@@ -221,7 +222,7 @@
         → <code class="returnvalue">text</code>
        </p>
        <p>
-        Extracts substring matching POSIX regular expression; see
+        Extracts the first substring matching POSIX regular expression; see
         <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
        </p>
        <p>
@@ -232,7 +233,7 @@
         → <code class="returnvalue">text</code>
        </p>
        <p>
-        Extracts substring matching <acronym class="acronym">SQL</acronym> regular expression;
+        Extracts the first substring matching <acronym class="acronym">SQL</acronym> regular expression;
         see <a class="xref" href="functions-matching.html#FUNCTIONS-SIMILARTO-REGEXP" title="9.7.2. SIMILAR TO Regular Expressions">Section 9.7.2</a>.
        </p>
        <p>
@@ -563,7 +564,7 @@
         → <code class="returnvalue">text[]</code>
        </p>
        <p>
-        Returns captured substring(s) resulting from the first match of a POSIX
+        Returns captured substrings resulting from the first match of a POSIX
         regular expression to the <em class="parameter"><code>string</code></em>; see
         <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
        </p>
@@ -576,9 +577,10 @@
         → <code class="returnvalue">setof text[]</code>
        </p>
        <p>
-        Returns captured substring(s) resulting from matching a POSIX regular
-        expression to the <em class="parameter"><code>string</code></em>; see
-        <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
+        Returns captured substrings resulting from the first match of a
+        POSIX regular expression to the <em class="parameter"><code>string</code></em>,
+        or multiple matches if the <code class="literal">g</code> flag is used;
+        see <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
        </p>
        <p>
         <code class="literal">regexp_matches('foobarbequebaz', 'ba.', 'g')</code>
@@ -593,8 +595,9 @@
         → <code class="returnvalue">text</code>
        </p>
        <p>
-        Replaces substring(s) matching a POSIX regular expression; see
-        <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
+        Replaces substrings resulting from the first match of a
+        POSIX regular expression, or multiple substring matches
+        if the <code class="literal">g</code> flag is used; see <a class="xref" href="functions-matching.html#FUNCTIONS-POSIX-REGEXP" title="9.7.3. POSIX Regular Expressions">Section 9.7.3</a>.
        </p>
        <p>
         <code class="literal">regexp_replace('Thomas', '.[mN]a.', 'M')</code>
@@ -733,7 +736,7 @@
         → <code class="returnvalue">integer</code>
        </p>
        <p>
-        Returns starting index of specified <em class="parameter"><code>substring</code></em>
+        Returns first starting index of the specified <em class="parameter"><code>substring</code></em>
         within <em class="parameter"><code>string</code></em>, or zero if it's not present.
         (Same as <code class="literal">position(<em class="parameter"><code>substring</code></em> in
         <em class="parameter"><code>string</code></em>)</code>, but note the reversed
@@ -995,4 +998,4 @@ SELECT format('Testing %3$s, %2$s, %s', 'one', 'two', 'three');
      The <code class="literal">%I</code> and <code class="literal">%L</code> format specifiers are particularly
      useful for safely constructing dynamic SQL statements.  See
      <a class="xref" href="plpgsql-statements.html#PLPGSQL-QUOTE-LITERAL-EXAMPLE" title="Example 42.1. Quoting Values in Dynamic Queries">Example 42.1</a>.
-    </p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="functions-math.html" title="9.3. Mathematical Functions and Operators">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="functions.html" title="Chapter 9. Functions and Operators">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9.3. Mathematical Functions and Operators </td><td width="20%" align="center"><a accesskey="h" href="index.html" title="PostgreSQL 13.3 Documentation">Home</a></td><td width="40%" align="right" valign="top"> 9.5. Binary String Functions and Operators</td></tr></table></div></body></html>
+    </p></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="functions-math.html" title="9.3. Mathematical Functions and Operators">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="functions.html" title="Chapter 9. Functions and Operators">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="functions-binarystring.html" title="9.5. Binary String Functions and Operators">Next</a></td></tr><tr><td width="40%" align="left" valign="top">9.3. Mathematical Functions and Operators </td><td width="20%" align="center"><a accesskey="h" href="index.html" title="PostgreSQL 13.4 Documentation">Home</a></td><td width="40%" align="right" valign="top"> 9.5. Binary String Functions and Operators</td></tr></table></div></body></html>

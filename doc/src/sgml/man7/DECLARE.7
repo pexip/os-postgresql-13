@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "DECLARE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "DECLARE" "7" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -213,11 +213,11 @@ may not be specified in this case\&.
 .ps -1
 .br
 .PP
-Scrollable and
-WITH HOLD
-cursors may give unexpected results if they invoke any volatile functions (see
-Section\ \&37.7)\&. When a previously fetched row is re\-fetched, the functions might be re\-executed, perhaps leading to results different from the first time\&. One workaround for such cases is to declare the cursor
-WITH HOLD
+Scrollable cursors may give unexpected results if they invoke any volatile functions (see
+Section\ \&37.7)\&. When a previously fetched row is re\-fetched, the functions might be re\-executed, perhaps leading to results different from the first time\&. It\*(Aqs best to specify
+NO SCROLL
+for a query involving volatile functions\&. If that is not practical, one workaround is to declare the cursor
+SCROLL WITH HOLD
 and commit the transaction before reading any rows from it\&. This will force the entire output of the cursor to be materialized in temporary storage, so that volatile functions are executed exactly once for each row\&.
 .sp .5v
 .RE

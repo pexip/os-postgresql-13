@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "CREATE FUNCTION" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "CREATE FUNCTION" "7" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -39,9 +39,10 @@ CREATE [ OR REPLACE ] FUNCTION
   { LANGUAGE \fIlang_name\fR
     | TRANSFORM { FOR TYPE \fItype_name\fR } [, \&.\&.\&. ]
     | WINDOW
-    | IMMUTABLE | STABLE | VOLATILE | [ NOT ] LEAKPROOF
-    | CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT
-    | [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER
+    | { IMMUTABLE | STABLE | VOLATILE }
+    | [ NOT ] LEAKPROOF
+    | { CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT }
+    | { [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER }
     | PARALLEL { UNSAFE | RESTRICTED | SAFE }
     | COST \fIexecution_cost\fR
     | ROWS \fIresult_rows\fR
