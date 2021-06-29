@@ -4,10 +4,13 @@ set -e
 
 VERSION=${DPKG_MAINTSCRIPT_PACKAGE##*-}
 
-if [ "$1" = configure ]; then
-    . /usr/share/postgresql-common/maintscripts-functions
+# Pexip modification: do not create main cluster on install
+# We handle this from product code
 
-    configure_version $VERSION "$2"
-fi
+#if [ "$1" = configure ]; then
+#    . /usr/share/postgresql-common/maintscripts-functions
+#
+#    configure_version $VERSION "$2"
+#fi
 
 #DEBHELPER#
