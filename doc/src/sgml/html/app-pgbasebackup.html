@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>pg_basebackup</title><link rel="stylesheet" type="text/css" href="stylesheet.css" /><link rev="made" href="pgsql-docs@lists.postgresql.org" /><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="prev" href="app-ecpg.html" title="ecpg" /><link rel="next" href="pgbench.html" title="pgbench" /></head><body id="docContent" class="container-fluid col-10"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="5" align="center"><span xmlns="http://www.w3.org/1999/xhtml" class="application">pg_basebackup</span></th></tr><tr><td width="10%" align="left"><a accesskey="p" href="app-ecpg.html" title="ecpg">Prev</a> </td><td width="10%" align="left"><a accesskey="u" href="reference-client.html" title="PostgreSQL Client Applications">Up</a></td><th width="60%" align="center">PostgreSQL Client Applications</th><td width="10%" align="right"><a accesskey="h" href="index.html" title="PostgreSQL 13.2 Documentation">Home</a></td><td width="10%" align="right"> <a accesskey="n" href="pgbench.html" title="pgbench">Next</a></td></tr></table><hr></hr></div><div class="refentry" id="APP-PGBASEBACKUP"><div class="titlepage"></div><a id="id-1.9.4.9.1" class="indexterm"></a><div class="refnamediv"><h2><span class="refentrytitle"><span class="application">pg_basebackup</span></span></h2><p>pg_basebackup — take a base backup of a <span class="productname">PostgreSQL</span> cluster</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p id="id-1.9.4.9.4.1"><code class="command">pg_basebackup</code> [<em class="replaceable"><code>option</code></em>...]</p></div></div><div class="refsect1" id="id-1.9.4.9.5"><h2>Description</h2><p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>pg_basebackup</title><link rel="stylesheet" type="text/css" href="stylesheet.css" /><link rev="made" href="pgsql-docs@lists.postgresql.org" /><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /><link rel="prev" href="app-ecpg.html" title="ecpg" /><link rel="next" href="pgbench.html" title="pgbench" /></head><body id="docContent" class="container-fluid col-10"><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="5" align="center"><span xmlns="http://www.w3.org/1999/xhtml" class="application">pg_basebackup</span></th></tr><tr><td width="10%" align="left"><a accesskey="p" href="app-ecpg.html" title="ecpg">Prev</a> </td><td width="10%" align="left"><a accesskey="u" href="reference-client.html" title="PostgreSQL Client Applications">Up</a></td><th width="60%" align="center">PostgreSQL Client Applications</th><td width="10%" align="right"><a accesskey="h" href="index.html" title="PostgreSQL 13.3 Documentation">Home</a></td><td width="10%" align="right"> <a accesskey="n" href="pgbench.html" title="pgbench">Next</a></td></tr></table><hr></hr></div><div class="refentry" id="APP-PGBASEBACKUP"><div class="titlepage"></div><a id="id-1.9.4.9.1" class="indexterm"></a><div class="refnamediv"><h2><span class="refentrytitle"><span class="application">pg_basebackup</span></span></h2><p>pg_basebackup — take a base backup of a <span class="productname">PostgreSQL</span> cluster</p></div><div class="refsynopsisdiv"><h2>Synopsis</h2><div class="cmdsynopsis"><p id="id-1.9.4.9.4.1"><code class="command">pg_basebackup</code> [<em class="replaceable"><code>option</code></em>...]</p></div></div><div class="refsect1" id="id-1.9.4.9.5"><h2>Description</h2><p>
    <span class="application">pg_basebackup</span> is used to take a base backup of
    a running <span class="productname">PostgreSQL</span> database cluster. The backup
    is taken without affecting other clients of the database, and can be used
@@ -39,8 +39,14 @@
    </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
       The backup history file is not created in the database cluster backed up.
      </p></li><li class="listitem"><p>
-      If you are using <code class="literal">-X none</code>, there is no guarantee that all
-      WAL files required for the backup are archived at the end of backup.
+      <span class="application">pg_basebackup</span> cannot force the standby
+      to switch to a new WAL file at the end of backup.
+      When you are using <code class="literal">-X none</code>, if write activity on
+      the primary is low, <span class="application">pg_basebackup</span> may
+      need to wait a long time for the last WAL file required for the backup
+      to be switched and archived.  In this case, it may be useful to run
+      <code class="function">pg_switch_wal</code> on the primary in order to
+      trigger an immediate WAL file switch.
      </p></li><li class="listitem"><p>
       If the standby is promoted to be primary during backup, the backup fails.
      </p></li><li class="listitem"><p>
@@ -81,6 +87,7 @@
             tablespaces, the main data directory will be placed in the
             target directory, but all other tablespaces will be placed
             in the same absolute path as they have on the source server.
+            (See <code class="option">--tablespace-mapping</code> to change that.)
            </p><p>
             This is the default format.
            </p></dd><dt><span class="term"><code class="literal">t</code><br /></span><span class="term"><code class="literal">tar</code></span></dt><dd><p>
@@ -96,7 +103,10 @@
             the cluster has no additional tablespaces and WAL
             streaming is not used.
            </p></dd></dl></div></dd><dt><span class="term"><code class="option">-R</code><br /></span><span class="term"><code class="option">--write-recovery-conf</code></span></dt><dd><p>
-        Creates a <code class="filename">standby.signal</code> file and appends
+        Creates a
+        <a class="link" href="warm-standby.html#FILE-STANDBY-SIGNAL"><code class="filename">standby.signal</code></a>
+        <a id="id-1.9.4.9.6.2.1.3.3.1.2" class="indexterm"></a>
+        file and appends
         connection settings to the <code class="filename">postgresql.auto.conf</code>
         file in the target directory (or within the base archive file when
         using tar format).  This eases setting up a standby server using the
@@ -127,7 +137,10 @@
         the main data directory are updated to point to the new location.  So
         the new data directory is ready to be used for a new server instance
         with all tablespaces in the updated locations.
-        </p></dd><dt><span class="term"><code class="option">--waldir=<em class="replaceable"><code>waldir</code></em></code></span></dt><dd><p>
+       </p><p>
+        Currently, this option only works with plain output format; it is
+        ignored if tar format is selected.
+       </p></dd><dt><span class="term"><code class="option">--waldir=<em class="replaceable"><code>waldir</code></em></code></span></dt><dd><p>
         Sets the directory to write WAL (write-ahead log) files to.
         By default WAL files will be placed in
         the <code class="filename">pg_wal</code> subdirectory of the target
@@ -473,4 +486,4 @@
    to <code class="filename">./backup/ts</code>:
 </p><pre class="screen">
 <code class="prompt">$</code> <strong class="userinput"><code>pg_basebackup -D backup/data -T /opt/ts=$(pwd)/backup/ts</code></strong>
-</pre></div><div class="refsect1" id="id-1.9.4.9.10"><h2>See Also</h2><span class="simplelist"><a class="xref" href="app-pgdump.html" title="pg_dump"><span class="refentrytitle">pg_dump</span></a></span></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="app-ecpg.html" title="ecpg">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="reference-client.html" title="PostgreSQL Client Applications">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="pgbench.html" title="pgbench">Next</a></td></tr><tr><td width="40%" align="left" valign="top"><span xmlns="http://www.w3.org/1999/xhtml" class="application">ecpg</span> </td><td width="20%" align="center"><a accesskey="h" href="index.html" title="PostgreSQL 13.2 Documentation">Home</a></td><td width="40%" align="right" valign="top"> <span xmlns="http://www.w3.org/1999/xhtml" class="application">pgbench</span></td></tr></table></div></body></html>
+</pre></div><div class="refsect1" id="id-1.9.4.9.10"><h2>See Also</h2><span class="simplelist"><a class="xref" href="app-pgdump.html" title="pg_dump"><span class="refentrytitle">pg_dump</span></a></span></div></div><div xmlns="http://www.w3.org/TR/xhtml1/transitional" class="navfooter"><hr></hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="app-ecpg.html" title="ecpg">Prev</a> </td><td width="20%" align="center"><a accesskey="u" href="reference-client.html" title="PostgreSQL Client Applications">Up</a></td><td width="40%" align="right"> <a accesskey="n" href="pgbench.html" title="pgbench">Next</a></td></tr><tr><td width="40%" align="left" valign="top"><span xmlns="http://www.w3.org/1999/xhtml" class="application">ecpg</span> </td><td width="20%" align="center"><a accesskey="h" href="index.html" title="PostgreSQL 13.3 Documentation">Home</a></td><td width="40%" align="right" valign="top"> <span xmlns="http://www.w3.org/1999/xhtml" class="application">pgbench</span></td></tr></table></div></body></html>

@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "PG_BASEBACKUP" "1" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "PG_BASEBACKUP" "1" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -91,8 +91,13 @@ The backup history file is not created in the database cluster backed up\&.
 .sp -1
 .IP \(bu 2.3
 .\}
-If you are using
-\-X none, there is no guarantee that all WAL files required for the backup are archived at the end of backup\&.
+pg_basebackup
+cannot force the standby to switch to a new WAL file at the end of backup\&. When you are using
+\-X none, if write activity on the primary is low,
+pg_basebackup
+may need to wait a long time for the last WAL file required for the backup to be switched and archived\&. In this case, it may be useful to run
+\fBpg_switch_wal\fR
+on the primary in order to trigger an immediate WAL file switch\&.
 .RE
 .sp
 .RS 4
@@ -162,7 +167,9 @@ p
 .br
 plain
 .RS 4
-Write the output as plain files, with the same layout as the source server\*(Aqs data directory and tablespaces\&. When the cluster has no additional tablespaces, the whole database will be placed in the target directory\&. If the cluster contains additional tablespaces, the main data directory will be placed in the target directory, but all other tablespaces will be placed in the same absolute path as they have on the source server\&.
+Write the output as plain files, with the same layout as the source server\*(Aqs data directory and tablespaces\&. When the cluster has no additional tablespaces, the whole database will be placed in the target directory\&. If the cluster contains additional tablespaces, the main data directory will be placed in the target directory, but all other tablespaces will be placed in the same absolute path as they have on the source server\&. (See
+\fB\-\-tablespace\-mapping\fR
+to change that\&.)
 .sp
 This is the default format\&.
 .RE
@@ -187,6 +194,7 @@ gzip\&. This is only allowed if the cluster has no additional tablespaces and WA
 .RS 4
 Creates a
 standby\&.signal
+
 file and appends connection settings to the
 postgresql\&.auto\&.conf
 file in the target directory (or within the base archive file when using tar format)\&. This eases setting up a standby server using the results of the backup\&.
@@ -221,6 +229,8 @@ and
 must be absolute paths\&. If either path needs to contain an equal sign (=), precede that with a backslash\&. This option can be specified multiple times for multiple tablespaces\&.
 .sp
 If a tablespace is relocated in this way, the symbolic links inside the main data directory are updated to point to the new location\&. So the new data directory is ready to be used for a new server instance with all tablespaces in the updated locations\&.
+.sp
+Currently, this option only works with plain output format; it is ignored if tar format is selected\&.
 .RE
 .PP
 \fB\-\-waldir=\fR\fB\fIwaldir\fR\fR

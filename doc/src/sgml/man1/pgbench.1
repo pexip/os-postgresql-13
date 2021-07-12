@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "PGBENCH" "1" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "PGBENCH" "1" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -171,6 +171,13 @@ The following is divided into three subsections\&. Different options are used du
 .PP
 pgbench
 accepts the following command\-line initialization arguments:
+.PP
+\fIdbname\fR
+.RS 4
+Specifies the name of the database to test in\&. If this is not specified, the environment variable
+\fBPGDATABASE\fR
+is used\&. If that is not set, the user name specified for the connection is used\&.
+.RE
 .PP
 \fB\-i\fR
 .br
@@ -707,6 +714,8 @@ pgbench
 will print partial results\&.
 .SH "ENVIRONMENT"
 .PP
+\fBPGDATABASE\fR
+.br
 \fBPGHOST\fR
 .br
 \fBPGPORT\fR
