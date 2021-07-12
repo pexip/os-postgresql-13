@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "ALTER TABLE" "7" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "ALTER TABLE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -427,6 +427,10 @@ This form validates a foreign key or check constraint that was previously create
 NOT VALID, by scanning the table to ensure there are no rows for which the constraint is not satisfied\&. Nothing happens if the constraint is already marked valid\&. (See
 Notes
 below for an explanation of the usefulness of this command\&.)
+.sp
+This command acquires a
+SHARE UPDATE EXCLUSIVE
+lock\&.
 .RE
 .PP
 DROP CONSTRAINT [ IF EXISTS ]
@@ -703,6 +707,8 @@ locks on the table to be attached and on the default partition (if any)\&.
 DETACH PARTITION \fIpartition_name\fR
 .RS 4
 This form detaches the specified partition of the target table\&. The detached partition continues to exist as a standalone table, but no longer has any ties to the table from which it was detached\&. Any indexes that were attached to the target table\*(Aqs indexes are detached\&. Any triggers that were created as clones of those in the target table are removed\&.
+SHARE
+lock is obtained on any tables that reference this partitioned table in foreign key constraints\&.
 .RE
 .PP
 All the forms of ALTER TABLE that act on a single table, except

@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.2 Documentation
-.\"    Source: PostgreSQL 13.2
+.\"    Manual: PostgreSQL 13.3 Documentation
+.\"    Source: PostgreSQL 13.3
 .\"  Language: English
 .\"
-.TH "CREATE FUNCTION" "7" "2021" "PostgreSQL 13.2" "PostgreSQL 13.2 Documentation"
+.TH "CREATE FUNCTION" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -87,6 +87,10 @@ The user that creates the function becomes the owner of the function\&.
 To be able to create a function, you must have
 USAGE
 privilege on the argument types and the return type\&.
+.PP
+Refer to
+Section\ \&37.3
+for further information on writing functions\&.
 .SH "PARAMETERS"
 .PP
 \fIname\fR
@@ -373,10 +377,6 @@ When repeated
 \fBCREATE FUNCTION\fR
 calls refer to the same object file, the file is only loaded once per session\&. To unload and reload the file (perhaps during development), start a new session\&.
 .RE
-.PP
-Refer to
-Section\ \&37.3
-for further information on writing functions\&.
 .SH "OVERLOADING"
 .PP
 PostgreSQL
@@ -440,8 +440,7 @@ argument, the strictness check tests that the variadic array
 is non\-null\&. The function will still be called if the array has null elements\&.
 .SH "EXAMPLES"
 .PP
-Here are some trivial examples to help you get started\&. For more information and examples, see
-Section\ \&37.3\&.
+Add two integers using a SQL function:
 .sp
 .if n \{\
 .RS 4
