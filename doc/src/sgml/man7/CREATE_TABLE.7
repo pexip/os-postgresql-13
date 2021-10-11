@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "CREATE TABLE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "CREATE TABLE" "7" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -462,7 +462,7 @@ STORAGE
 settings, resulting in the copied columns in the new table having type\-specific default settings\&. For more on
 STORAGE
 settings, see
-Section\ \&68.2\&.
+Section\ \&69.2\&.
 .RE
 .PP
 INCLUDING ALL
@@ -886,7 +886,7 @@ CREATE INDEX (\fBCREATE_INDEX\fR(7))\&. The storage parameters currently availab
 toast\&., which controls the behavior of the table\*(Aqs secondary
 TOAST
 table, if any (see
-Section\ \&68.2
+Section\ \&69.2
 for more information about TOAST)\&. If a table parameter value is set and the equivalent
 toast\&.
 parameter is not, the TOAST table will use the table\*(Aqs parameter value\&. Specifying these parameters for partitioned tables is not supported, but you may specify them for individual leaf partitions\&.
@@ -975,7 +975,7 @@ autovacuum_vacuum_insert_threshold
 parameter\&. The special value of \-1 may be used to disable insert vacuums on the table\&.
 .RE
 .PP
-autovacuum_vacuum_insert_scale_factor, toast\&.autovacuum_vacuum_insert_scale_factor (float4)
+autovacuum_vacuum_insert_scale_factor, toast\&.autovacuum_vacuum_insert_scale_factor (floating point)
 .RS 4
 Per\-table value for
 autovacuum_vacuum_insert_scale_factor

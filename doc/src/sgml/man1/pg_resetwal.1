@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "PG_RESETWAL" "1" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "PG_RESETWAL" "1" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -230,6 +230,22 @@ will set the WAL starting address beyond the latest existing WAL segment file, s
 together with this option to manually set the WAL starting address if WAL file name overlap will cause problems with your archiving strategy\&.
 .sp .5v
 .RE
+.RE
+.PP
+\fB\-u \fR\fB\fIxid\fR\fR
+.br
+\fB\-\-oldest\-transaction\-id=\fR\fB\fIxid\fR\fR
+.RS 4
+Manually set the oldest unfrozen transaction ID\&.
+.sp
+A safe value can be determined by looking for the numerically smallest file name in the directory
+pg_xact
+under the data directory and then multiplying by 1048576 (0x100000)\&. Note that the file names are in hexadecimal\&. It is usually easiest to specify the option value in hexadecimal too\&. For example, if
+0007
+is the smallest entry in
+pg_xact,
+\-u 0x700000
+will work (five trailing zeroes provide the proper multiplier)\&.
 .RE
 .PP
 \fB\-x \fR\fB\fIxid\fR\fR

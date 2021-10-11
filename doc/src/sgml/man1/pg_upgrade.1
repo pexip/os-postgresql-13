@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "PG_UPGRADE" "1" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "PG_UPGRADE" "1" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -307,11 +307,13 @@ flags that match the old cluster\&. Many prebuilt installers do this step automa
 .sp -1
 .IP "  5." 4.2
 .\}
-Install custom shared object files: Install any custom shared object files (or DLLs) used by the old cluster into the new cluster, e\&.g\&.,
-pgcrypto\&.so, whether they are from
+Install extension shared object files: Many extensions and custom modules, whether from
 contrib
-or some other source\&. Do not install the schema definitions, e\&.g\&.,
-\fBCREATE EXTENSION pgcrypto\fR, because these will be upgraded from the old cluster\&. Also, any custom full text search files (dictionary, synonym, thesaurus, stop words) must also be copied to the new cluster\&.
+or another source, use shared object files (or DLLs), e\&.g\&.,
+pgcrypto\&.so\&. If the old cluster used these, shared object files matching the new server binary must be installed in the new cluster, usually via operating system commands\&. Do not load the schema definitions, e\&.g\&.,
+\fBCREATE EXTENSION pgcrypto\fR, because these will be duplicated from the old cluster\&. If extension updates are available,
+pg_upgrade
+will report this and create a script that can be run later to update them\&.
 .RE
 .sp
 .RS 4
@@ -321,6 +323,17 @@ or some other source\&. Do not install the schema definitions, e\&.g\&.,
 .el \{\
 .sp -1
 .IP "  6." 4.2
+.\}
+Copy custom full\-text search files: Copy any custom full text search files (dictionary, synonym, thesaurus, stop words) from the old to the new cluster\&.
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04' 7.\h'+01'\c
+.\}
+.el \{\
+.sp -1
+.IP "  7." 4.2
 .\}
 Adjust authentication: \fBpg_upgrade\fR
 will connect to the old and new servers several times, so you might want to set authentication to
@@ -335,11 +348,11 @@ Section\ \&33.15)\&.
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 7.\h'+01'\c
+\h'-04' 8.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  7." 4.2
+.IP "  8." 4.2
 .\}
 Stop both servers: Make sure both database servers are stopped using, on Unix, e\&.g\&.:
 .sp
@@ -372,14 +385,14 @@ Streaming replication and log\-shipping standby servers can remain running until
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 8.\h'+01'\c
+\h'-04' 9.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  8." 4.2
+.IP "  9." 4.2
 .\}
 Prepare for standby server upgrades: If you are upgrading standby servers using methods outlined in section
-Step 10, verify that the old standby servers are caught up by running
+Step 11, verify that the old standby servers are caught up by running
 pg_controldata
 against the old primary and standby clusters\&. Verify that the
 \(lqLatest checkpoint location\(rq
@@ -394,11 +407,11 @@ file on the new primary cluster\&.
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 9.\h'+01'\c
+\h'-04' 10.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  9." 4.2
+.IP "  10." 4.2
 .\}
 Run pg_upgrade: Always run the
 pg_upgrade
@@ -470,7 +483,7 @@ defaults to running servers on port 50432 to avoid unintended client connections
 If an error occurs while restoring the database schema,
 \fBpg_upgrade\fR
 will exit and you will have to revert to the old cluster as outlined in
-Step 16
+Step 17
 below\&. To try
 \fBpg_upgrade\fR
 again, you will need to modify the old cluster so the pg_upgrade schema restore succeeds\&. If the problem is a
@@ -482,11 +495,11 @@ module from the old cluster and install it in the new cluster after the upgrade,
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 10.\h'+01'\c
+\h'-04' 11.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  10." 4.2
+.IP "  11." 4.2
 .\}
 Upgrade streaming replication and log\-shipping standby servers: If you used link mode and have Streaming Replication (see
 Section\ \&26.2.5) or Log\-Shipping (see
@@ -508,7 +521,7 @@ Make sure the new standby data directories do \fInot\fR exist: Make sure the new
 exist or are empty\&. If
 initdb
 was run, delete the standby servers\*(Aq new data directories\&.
-Install custom shared object files: Install the same custom shared object files on the new standbys that you installed in the new primary cluster\&.
+Install extension shared object files: Install the same extension shared object files on the new standbys that you installed in the new primary cluster\&.
 Stop standby servers: If the standby servers are still running, stop them now using the above instructions\&.
 Save configuration files: Save any configuration files from the old standbys\*(Aq configuration directories you need to keep, e\&.g\&.,
 postgresql\&.conf
@@ -596,11 +609,11 @@ or take a file system backup as the standbys are still synchronized with the pri
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 11.\h'+01'\c
+\h'-04' 12.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  11." 4.2
+.IP "  12." 4.2
 .\}
 Restore pg_hba\&.conf: If you modified
 pg_hba\&.conf, restore its original settings\&. It might also be necessary to adjust other configuration files in the new cluster to match the old cluster, e\&.g\&.,
@@ -611,11 +624,11 @@ postgresql\&.auto\&.conf\&.
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 12.\h'+01'\c
+\h'-04' 13.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  12." 4.2
+.IP "  13." 4.2
 .\}
 Start the new server: The new server can now be safely started, and then any
 rsync\*(Aqed standby servers\&.
@@ -623,11 +636,11 @@ rsync\*(Aqed standby servers\&.
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 13.\h'+01'\c
+\h'-04' 14.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  13." 4.2
+.IP "  14." 4.2
 .\}
 Post\-upgrade processing: If any post\-upgrade processing is required, pg_upgrade will issue warnings as it completes\&. It will also generate script files that must be run by the administrator\&. The script files will connect to each database that needs post\-upgrade processing\&. Each script should be run using:
 .sp
@@ -661,11 +674,11 @@ In general it is unsafe to access tables referenced in rebuild scripts until the
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 14.\h'+01'\c
+\h'-04' 15.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  14." 4.2
+.IP "  15." 4.2
 .\}
 Statistics: Because optimizer statistics are not transferred by
 \fBpg_upgrade\fR, you will be instructed to run a command to regenerate that information at the end of the upgrade\&. You might need to set connection parameters to match your new cluster\&.
@@ -673,11 +686,11 @@ Statistics: Because optimizer statistics are not transferred by
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 15.\h'+01'\c
+\h'-04' 16.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  15." 4.2
+.IP "  16." 4.2
 .\}
 Delete old cluster: Once you are satisfied with the upgrade, you can delete the old cluster\*(Aqs data directories by running the script mentioned when
 \fBpg_upgrade\fR
@@ -688,11 +701,11 @@ share)\&.
 .sp
 .RS 4
 .ie n \{\
-\h'-04' 16.\h'+01'\c
+\h'-04' 17.\h'+01'\c
 .\}
 .el \{\
 .sp -1
-.IP "  16." 4.2
+.IP "  17." 4.2
 .\}
 Reverting to old cluster: If, after running
 \fBpg_upgrade\fR, you wish to revert to the old cluster, there are several options:
