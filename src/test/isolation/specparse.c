@@ -131,13 +131,15 @@ extern int spec_yydebug;
   enum yytokentype
   {
     sqlblock = 258,
-    string_literal = 259,
-    PERMUTATION = 260,
-    SESSION = 261,
-    SETUP = 262,
-    STEP = 263,
-    TEARDOWN = 264,
-    TEST = 265
+    identifier = 259,
+    INTEGER = 260,
+    NOTICES = 261,
+    PERMUTATION = 262,
+    SESSION = 263,
+    SETUP = 264,
+    STEP = 265,
+    TEARDOWN = 266,
+    TEST = 267
   };
 #endif
 
@@ -149,16 +151,19 @@ union YYSTYPE
 #line 26 "specparse.y" /* yacc.c:352  */
 
 	char	   *str;
+	int			integer;
 	Session	   *session;
 	Step	   *step;
 	Permutation *permutation;
+	PermutationStep *permutationstep;
+	PermutationStepBlocker *blocker;
 	struct
 	{
 		void  **elements;
 		int		nelements;
 	}			ptr_list;
 
-#line 162 "specparse.c" /* yacc.c:352  */
+#line 167 "specparse.c" /* yacc.c:352  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -406,19 +411,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   30
+#define YYLAST   41
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  11
+#define YYNTOKENS  17
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  14
+#define YYNNTS  17
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  22
+#define YYNRULES  29
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  32
+#define YYNSTATES  43
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   265
+#define YYMAXUTOK   267
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex, with out-of-bounds checking.  */
@@ -433,7 +438,7 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      13,    14,    16,     2,    15,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -455,16 +460,16 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10
+       5,     6,     7,     8,     9,    10,    11,    12
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_uint16 yyrline[] =
 {
-       0,    53,    53,    70,    74,    84,    85,    89,    93,    94,
-      98,   105,   114,   126,   133,   143,   155,   160,   166,   173,
-     183,   192,   199
+       0,    59,    59,    76,    80,    90,    91,    95,    99,   100,
+     104,   111,   120,   132,   139,   149,   161,   166,   172,   179,
+     189,   198,   205,   214,   222,   233,   240,   249,   258,   267
 };
 #endif
 
@@ -473,11 +478,13 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "sqlblock", "string_literal",
-  "PERMUTATION", "SESSION", "SETUP", "STEP", "TEARDOWN", "TEST", "$accept",
-  "TestSpec", "setup_list", "opt_setup", "setup", "opt_teardown",
-  "session_list", "session", "step_list", "step", "opt_permutation_list",
-  "permutation_list", "permutation", "string_literal_list", YY_NULLPTR
+  "$end", "error", "$undefined", "sqlblock", "identifier", "INTEGER",
+  "NOTICES", "PERMUTATION", "SESSION", "SETUP", "STEP", "TEARDOWN", "TEST",
+  "'('", "')'", "','", "'*'", "$accept", "TestSpec", "setup_list",
+  "opt_setup", "setup", "opt_teardown", "session_list", "session",
+  "step_list", "step", "opt_permutation_list", "permutation_list",
+  "permutation", "permutation_step_list", "permutation_step",
+  "blocker_list", "blocker", YY_NULLPTR
 };
 #endif
 
@@ -487,14 +494,14 @@ static const char *const yytname[] =
 static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
-     265
+     265,   266,   267,    40,    41,    44,    42
 };
 # endif
 
-#define YYPACT_NINF -15
+#define YYPACT_NINF -14
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-15)))
+  (!!((Yystate) == (-14)))
 
 #define YYTABLE_NINF -1
 
@@ -505,10 +512,11 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -15,     1,    -7,   -15,     4,     5,   -15,     3,   -15,   -15,
-       6,    -2,   -15,     7,     8,   -15,   -15,    10,   -15,     9,
-     -15,   -15,    12,   -15,    14,    -3,   -15,   -15,    16,   -15,
-     -15,   -15
+     -14,     2,    -8,   -14,     3,     4,   -14,     7,   -14,   -14,
+       6,    -3,   -14,     8,    12,   -14,   -14,    11,   -14,     1,
+     -14,     9,    12,   -14,   -14,    15,    -2,   -14,    -4,   -14,
+      17,   -14,   -14,    18,   -14,    -1,   -14,   -14,    16,   -14,
+      -4,   -14,   -14
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -518,22 +526,23 @@ static const yytype_uint8 yydefact[] =
 {
        3,     0,     8,     1,     0,     0,     4,     0,     7,     9,
        0,    17,    11,     5,     0,    10,     2,    16,    19,     0,
-       6,    22,    20,    18,     0,     8,    14,    21,     0,    12,
-      13,    15
+       6,    23,    20,    22,    18,     0,     8,    14,     0,    21,
+       0,    12,    13,    27,    29,     0,    26,    15,     0,    24,
+       0,    28,    25
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -15,   -15,   -15,   -15,     0,   -14,   -15,    11,   -15,    -5,
-     -15,   -15,    13,   -15
+     -14,   -14,   -14,   -14,    10,     0,   -14,    14,   -14,     5,
+     -14,   -14,    13,   -14,    19,   -14,   -13
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     2,    19,     6,     7,    11,    12,    25,    26,
-      16,    17,    18,    22
+      -1,     1,     2,    19,     6,     7,    11,    12,    26,    27,
+      16,    17,    18,    22,    23,    35,    36
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -541,36 +550,39 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       4,     3,     5,    14,    10,    24,     5,     8,     9,    10,
-      13,    29,    21,    20,     4,    14,    27,    24,    28,    31,
-      30,     0,    15,     0,     0,     0,     0,     0,     0,     0,
-      23
+      33,     4,     3,     5,    14,    10,     8,     9,    25,     5,
+      13,    25,    34,    39,    40,    10,    21,     4,    14,    30,
+      37,    41,    28,    20,    38,    15,    31,    42,     0,     0,
+      24,    32,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,    29
 };
 
 static const yytype_int8 yycheck[] =
 {
-       7,     0,     9,     5,     6,     8,     9,     3,     3,     6,
-       4,    25,     4,    13,     7,     5,     4,     8,     4,     3,
-      25,    -1,    11,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      17
+       4,     9,     0,    11,     7,     8,     3,     3,    10,    11,
+       4,    10,    16,    14,    15,     8,     4,     9,     7,     4,
+       3,     5,    13,    13,     6,    11,    26,    40,    -1,    -1,
+      17,    26,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    22
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    12,    13,     0,     7,     9,    15,    16,     3,     3,
-       6,    17,    18,     4,     5,    18,    21,    22,    23,    14,
-      15,     4,    24,    23,     8,    19,    20,     4,     4,    16,
-      20,     3
+       0,    18,    19,     0,     9,    11,    21,    22,     3,     3,
+       8,    23,    24,     4,     7,    24,    27,    28,    29,    20,
+      21,     4,    30,    31,    29,    10,    25,    26,    13,    31,
+       4,    22,    26,     4,    16,    32,    33,     3,     6,    14,
+      15,     5,    33
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    11,    12,    13,    13,    14,    14,    15,    16,    16,
-      17,    17,    18,    19,    19,    20,    21,    21,    22,    22,
-      23,    24,    24
+       0,    17,    18,    19,    19,    20,    20,    21,    22,    22,
+      23,    23,    24,    25,    25,    26,    27,    27,    28,    28,
+      29,    30,    30,    31,    31,    32,    32,    33,    33,    33
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -578,7 +590,7 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     4,     0,     2,     0,     1,     2,     0,     2,
        2,     1,     5,     2,     1,     3,     1,     0,     2,     1,
-       2,     2,     1
+       2,     2,     1,     1,     4,     3,     1,     1,     3,     1
 };
 
 
@@ -1264,7 +1276,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 57 "specparse.y" /* yacc.c:1652  */
+#line 63 "specparse.y" /* yacc.c:1652  */
     {
 				parseresult.setupsqls = (char **) (yyvsp[-3].ptr_list).elements;
 				parseresult.nsetupsqls = (yyvsp[-3].ptr_list).nelements;
@@ -1274,82 +1286,82 @@ yyreduce:
 				parseresult.permutations = (Permutation **) (yyvsp[0].ptr_list).elements;
 				parseresult.npermutations = (yyvsp[0].ptr_list).nelements;
 			}
-#line 1278 "specparse.c" /* yacc.c:1652  */
+#line 1290 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 3:
-#line 70 "specparse.y" /* yacc.c:1652  */
+#line 76 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = NULL;
 				(yyval.ptr_list).nelements = 0;
 			}
-#line 1287 "specparse.c" /* yacc.c:1652  */
+#line 1299 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 4:
-#line 75 "specparse.y" /* yacc.c:1652  */
+#line 81 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = pg_realloc((yyvsp[-1].ptr_list).elements,
 										 ((yyvsp[-1].ptr_list).nelements + 1) * sizeof(void *));
 				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].str);
 				(yyval.ptr_list).nelements = (yyvsp[-1].ptr_list).nelements + 1;
 			}
-#line 1298 "specparse.c" /* yacc.c:1652  */
-    break;
-
-  case 5:
-#line 84 "specparse.y" /* yacc.c:1652  */
-    { (yyval.str) = NULL; }
-#line 1304 "specparse.c" /* yacc.c:1652  */
-    break;
-
-  case 6:
-#line 85 "specparse.y" /* yacc.c:1652  */
-    { (yyval.str) = (yyvsp[0].str); }
 #line 1310 "specparse.c" /* yacc.c:1652  */
     break;
 
-  case 7:
-#line 89 "specparse.y" /* yacc.c:1652  */
-    { (yyval.str) = (yyvsp[0].str); }
+  case 5:
+#line 90 "specparse.y" /* yacc.c:1652  */
+    { (yyval.str) = NULL; }
 #line 1316 "specparse.c" /* yacc.c:1652  */
     break;
 
-  case 8:
-#line 93 "specparse.y" /* yacc.c:1652  */
-    { (yyval.str) = NULL; }
+  case 6:
+#line 91 "specparse.y" /* yacc.c:1652  */
+    { (yyval.str) = (yyvsp[0].str); }
 #line 1322 "specparse.c" /* yacc.c:1652  */
     break;
 
-  case 9:
-#line 94 "specparse.y" /* yacc.c:1652  */
+  case 7:
+#line 95 "specparse.y" /* yacc.c:1652  */
     { (yyval.str) = (yyvsp[0].str); }
 #line 1328 "specparse.c" /* yacc.c:1652  */
     break;
 
-  case 10:
+  case 8:
 #line 99 "specparse.y" /* yacc.c:1652  */
+    { (yyval.str) = NULL; }
+#line 1334 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 9:
+#line 100 "specparse.y" /* yacc.c:1652  */
+    { (yyval.str) = (yyvsp[0].str); }
+#line 1340 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 10:
+#line 105 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = pg_realloc((yyvsp[-1].ptr_list).elements,
 										 ((yyvsp[-1].ptr_list).nelements + 1) * sizeof(void *));
 				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].session);
 				(yyval.ptr_list).nelements = (yyvsp[-1].ptr_list).nelements + 1;
 			}
-#line 1339 "specparse.c" /* yacc.c:1652  */
+#line 1351 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 11:
-#line 106 "specparse.y" /* yacc.c:1652  */
+#line 112 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).nelements = 1;
 				(yyval.ptr_list).elements = pg_malloc(sizeof(void *));
 				(yyval.ptr_list).elements[0] = (yyvsp[0].session);
 			}
-#line 1349 "specparse.c" /* yacc.c:1652  */
+#line 1361 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 12:
-#line 115 "specparse.y" /* yacc.c:1652  */
+#line 121 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.session) = pg_malloc(sizeof(Session));
 				(yyval.session)->name = (yyvsp[-3].str);
@@ -1358,113 +1370,197 @@ yyreduce:
 				(yyval.session)->nsteps = (yyvsp[-1].ptr_list).nelements;
 				(yyval.session)->teardownsql = (yyvsp[0].str);
 			}
-#line 1362 "specparse.c" /* yacc.c:1652  */
+#line 1374 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 13:
-#line 127 "specparse.y" /* yacc.c:1652  */
+#line 133 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = pg_realloc((yyvsp[-1].ptr_list).elements,
 										 ((yyvsp[-1].ptr_list).nelements + 1) * sizeof(void *));
 				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].step);
 				(yyval.ptr_list).nelements = (yyvsp[-1].ptr_list).nelements + 1;
 			}
-#line 1373 "specparse.c" /* yacc.c:1652  */
+#line 1385 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 14:
-#line 134 "specparse.y" /* yacc.c:1652  */
+#line 140 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).nelements = 1;
 				(yyval.ptr_list).elements = pg_malloc(sizeof(void *));
 				(yyval.ptr_list).elements[0] = (yyvsp[0].step);
 			}
-#line 1383 "specparse.c" /* yacc.c:1652  */
+#line 1395 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 15:
-#line 144 "specparse.y" /* yacc.c:1652  */
+#line 150 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.step) = pg_malloc(sizeof(Step));
 				(yyval.step)->name = (yyvsp[-1].str);
 				(yyval.step)->sql = (yyvsp[0].str);
+				(yyval.step)->session = -1; /* until filled */
 				(yyval.step)->used = false;
-				(yyval.step)->errormsg = NULL;
 			}
-#line 1395 "specparse.c" /* yacc.c:1652  */
+#line 1407 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 16:
-#line 156 "specparse.y" /* yacc.c:1652  */
+#line 162 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list) = (yyvsp[0].ptr_list);
 			}
-#line 1403 "specparse.c" /* yacc.c:1652  */
+#line 1415 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 17:
-#line 160 "specparse.y" /* yacc.c:1652  */
+#line 166 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = NULL;
 				(yyval.ptr_list).nelements = 0;
 			}
-#line 1412 "specparse.c" /* yacc.c:1652  */
+#line 1424 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 18:
-#line 167 "specparse.y" /* yacc.c:1652  */
+#line 173 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = pg_realloc((yyvsp[-1].ptr_list).elements,
 										 ((yyvsp[-1].ptr_list).nelements + 1) * sizeof(void *));
 				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].permutation);
 				(yyval.ptr_list).nelements = (yyvsp[-1].ptr_list).nelements + 1;
 			}
-#line 1423 "specparse.c" /* yacc.c:1652  */
+#line 1435 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 19:
-#line 174 "specparse.y" /* yacc.c:1652  */
+#line 180 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).nelements = 1;
 				(yyval.ptr_list).elements = pg_malloc(sizeof(void *));
 				(yyval.ptr_list).elements[0] = (yyvsp[0].permutation);
 			}
-#line 1433 "specparse.c" /* yacc.c:1652  */
+#line 1445 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 20:
-#line 184 "specparse.y" /* yacc.c:1652  */
+#line 190 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.permutation) = pg_malloc(sizeof(Permutation));
-				(yyval.permutation)->stepnames = (char **) (yyvsp[0].ptr_list).elements;
 				(yyval.permutation)->nsteps = (yyvsp[0].ptr_list).nelements;
+				(yyval.permutation)->steps = (PermutationStep **) (yyvsp[0].ptr_list).elements;
 			}
-#line 1443 "specparse.c" /* yacc.c:1652  */
+#line 1455 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 21:
-#line 193 "specparse.y" /* yacc.c:1652  */
+#line 199 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).elements = pg_realloc((yyvsp[-1].ptr_list).elements,
 										 ((yyvsp[-1].ptr_list).nelements + 1) * sizeof(void *));
-				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].str);
+				(yyval.ptr_list).elements[(yyvsp[-1].ptr_list).nelements] = (yyvsp[0].permutationstep);
 				(yyval.ptr_list).nelements = (yyvsp[-1].ptr_list).nelements + 1;
 			}
-#line 1454 "specparse.c" /* yacc.c:1652  */
+#line 1466 "specparse.c" /* yacc.c:1652  */
     break;
 
   case 22:
-#line 200 "specparse.y" /* yacc.c:1652  */
+#line 206 "specparse.y" /* yacc.c:1652  */
     {
 				(yyval.ptr_list).nelements = 1;
 				(yyval.ptr_list).elements = pg_malloc(sizeof(void *));
-				(yyval.ptr_list).elements[0] = (yyvsp[0].str);
+				(yyval.ptr_list).elements[0] = (yyvsp[0].permutationstep);
 			}
-#line 1464 "specparse.c" /* yacc.c:1652  */
+#line 1476 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 23:
+#line 215 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.permutationstep) = pg_malloc(sizeof(PermutationStep));
+				(yyval.permutationstep)->name = (yyvsp[0].str);
+				(yyval.permutationstep)->blockers = NULL;
+				(yyval.permutationstep)->nblockers = 0;
+				(yyval.permutationstep)->step = NULL;
+			}
+#line 1488 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 24:
+#line 223 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.permutationstep) = pg_malloc(sizeof(PermutationStep));
+				(yyval.permutationstep)->name = (yyvsp[-3].str);
+				(yyval.permutationstep)->blockers = (PermutationStepBlocker **) (yyvsp[-1].ptr_list).elements;
+				(yyval.permutationstep)->nblockers = (yyvsp[-1].ptr_list).nelements;
+				(yyval.permutationstep)->step = NULL;
+			}
+#line 1500 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 25:
+#line 234 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.ptr_list).elements = pg_realloc((yyvsp[-2].ptr_list).elements,
+										 ((yyvsp[-2].ptr_list).nelements + 1) * sizeof(void *));
+				(yyval.ptr_list).elements[(yyvsp[-2].ptr_list).nelements] = (yyvsp[0].blocker);
+				(yyval.ptr_list).nelements = (yyvsp[-2].ptr_list).nelements + 1;
+			}
+#line 1511 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 26:
+#line 241 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.ptr_list).nelements = 1;
+				(yyval.ptr_list).elements = pg_malloc(sizeof(void *));
+				(yyval.ptr_list).elements[0] = (yyvsp[0].blocker);
+			}
+#line 1521 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 27:
+#line 250 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.blocker) = pg_malloc(sizeof(PermutationStepBlocker));
+				(yyval.blocker)->stepname = (yyvsp[0].str);
+				(yyval.blocker)->blocktype = PSB_OTHER_STEP;
+				(yyval.blocker)->num_notices = -1;
+				(yyval.blocker)->step = NULL;
+				(yyval.blocker)->target_notices = -1;
+			}
+#line 1534 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 28:
+#line 259 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.blocker) = pg_malloc(sizeof(PermutationStepBlocker));
+				(yyval.blocker)->stepname = (yyvsp[-2].str);
+				(yyval.blocker)->blocktype = PSB_NUM_NOTICES;
+				(yyval.blocker)->num_notices = (yyvsp[0].integer);
+				(yyval.blocker)->step = NULL;
+				(yyval.blocker)->target_notices = -1;
+			}
+#line 1547 "specparse.c" /* yacc.c:1652  */
+    break;
+
+  case 29:
+#line 268 "specparse.y" /* yacc.c:1652  */
+    {
+				(yyval.blocker) = pg_malloc(sizeof(PermutationStepBlocker));
+				(yyval.blocker)->stepname = NULL;
+				(yyval.blocker)->blocktype = PSB_ONCE;
+				(yyval.blocker)->num_notices = -1;
+				(yyval.blocker)->step = NULL;
+				(yyval.blocker)->target_notices = -1;
+			}
+#line 1560 "specparse.c" /* yacc.c:1652  */
     break;
 
 
-#line 1468 "specparse.c" /* yacc.c:1652  */
+#line 1564 "specparse.c" /* yacc.c:1652  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1695,7 +1791,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 207 "specparse.y" /* yacc.c:1918  */
+#line 278 "specparse.y" /* yacc.c:1918  */
 
 
 #include "specscanner.c"

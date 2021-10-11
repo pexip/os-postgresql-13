@@ -502,7 +502,8 @@ sql_help_ALTER_FUNCTION(PQExpBuffer buf)
 					  "%s\n"
 					  "\n"
 					  "    CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT\n"
-					  "    IMMUTABLE | STABLE | VOLATILE | [ NOT ] LEAKPROOF\n"
+					  "    IMMUTABLE | STABLE | VOLATILE\n"
+					  "    [ NOT ] LEAKPROOF\n"
 					  "    [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER\n"
 					  "    PARALLEL { UNSAFE | RESTRICTED | SAFE }\n"
 					  "    COST %s\n"
@@ -963,7 +964,8 @@ sql_help_ALTER_ROUTINE(PQExpBuffer buf)
 					  "\n"
 					  "%s\n"
 					  "\n"
-					  "    IMMUTABLE | STABLE | VOLATILE | [ NOT ] LEAKPROOF\n"
+					  "    IMMUTABLE | STABLE | VOLATILE\n"
+					  "    [ NOT ] LEAKPROOF\n"
 					  "    [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER\n"
 					  "    PARALLEL { UNSAFE | RESTRICTED | SAFE }\n"
 					  "    COST %s\n"
@@ -2281,9 +2283,10 @@ sql_help_CREATE_FUNCTION(PQExpBuffer buf)
 					  "  { LANGUAGE %s\n"
 					  "    | TRANSFORM { FOR TYPE %s } [, ... ]\n"
 					  "    | WINDOW\n"
-					  "    | IMMUTABLE | STABLE | VOLATILE | [ NOT ] LEAKPROOF\n"
-					  "    | CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT\n"
-					  "    | [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER\n"
+					  "    | { IMMUTABLE | STABLE | VOLATILE }\n"
+					  "    | [ NOT ] LEAKPROOF\n"
+					  "    | { CALLED ON NULL INPUT | RETURNS NULL ON NULL INPUT | STRICT }\n"
+					  "    | { [ EXTERNAL ] SECURITY INVOKER | [ EXTERNAL ] SECURITY DEFINER }\n"
 					  "    | PARALLEL { UNSAFE | RESTRICTED | SAFE }\n"
 					  "    | COST %s\n"
 					  "    | ROWS %s\n"
@@ -3468,7 +3471,7 @@ static void
 sql_help_DROP_STATISTICS(PQExpBuffer buf)
 {
 	appendPQExpBuffer(buf,
-					  "DROP STATISTICS [ IF EXISTS ] %s [, ...]",
+					  "DROP STATISTICS [ IF EXISTS ] %s [, ...] [ CASCADE | RESTRICT ]",
 					  _("name"));
 }
 
@@ -4879,7 +4882,7 @@ const struct _helpStruct QL_HELP[] = {
       N_("change the definition of a function"),
       "sql-alterfunction",
       sql_help_ALTER_FUNCTION,
-      23 },
+      24 },
 
     { "ALTER GROUP",
       N_("change role name or membership"),
@@ -4957,7 +4960,7 @@ const struct _helpStruct QL_HELP[] = {
       N_("change the definition of a routine"),
       "sql-alterroutine",
       sql_help_ALTER_ROUTINE,
-      21 },
+      22 },
 
     { "ALTER RULE",
       N_("change the definition of a rule"),
@@ -5197,7 +5200,7 @@ const struct _helpStruct QL_HELP[] = {
       N_("define a new function"),
       "sql-createfunction",
       sql_help_CREATE_FUNCTION,
-      17 },
+      18 },
 
     { "CREATE GROUP",
       N_("define a new database role"),

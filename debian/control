@@ -43,7 +43,7 @@ Build-Depends:
  zlib1g-dev | libz-dev
 Homepage: http://www.postgresql.org/
 Vcs-Browser: https://salsa.debian.org/postgresql/postgresql
-Vcs-Git: https://salsa.debian.org/postgresql/postgresql.git -b 13
+Vcs-Git: https://salsa.debian.org/postgresql/postgresql.git -b 13-bullseye
 XS-Pexip-Upstream: http://ftp.debian.org/debian/ bullseye
 
 Package: libpq-dev

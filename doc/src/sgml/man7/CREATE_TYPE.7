@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "CREATE TYPE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "CREATE TYPE" "7" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -241,7 +241,7 @@ to
 VARIABLE\&. (Internally, this is represented by setting
 typlen
 to \-1\&.) The internal representation of all variable\-length types must start with a 4\-byte integer giving the total length of this value of the type\&. (Note that the length field is often encoded, as described in
-Section\ \&68.2; it\*(Aqs unwise to access it directly\&.)
+Section\ \&69.2; it\*(Aqs unwise to access it directly\&.)
 .PP
 The optional flag
 PASSEDBYVALUE
@@ -279,7 +279,7 @@ values other than
 plain
 imply that the functions of the data type can handle values that have been
 toasted, as described in
-Section\ \&68.2
+Section\ \&69.2
 and
 Section\ \&37.13.1\&. The specific other value given merely determines the default TOAST storage strategy for columns of a toastable data type; users can pick other strategies for individual columns using
 ALTER TABLE SET STORAGE\&.

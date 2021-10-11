@@ -29,9 +29,9 @@ PostgresNode - class representing PostgreSQL server instance
   # as well as the psql exit code. Pass some extra psql
   # options. If there's an error from psql raise an exception.
   my ($stdout, $stderr, $timed_out);
-  my $cmdret = $node->psql('postgres', 'SELECT pg_sleep(60)',
+  my $cmdret = $node->psql('postgres', 'SELECT pg_sleep(600)',
 	  stdout => \$stdout, stderr => \$stderr,
-	  timeout => 30, timed_out => \$timed_out,
+	  timeout => 180, timed_out => \$timed_out,
 	  extra_params => ['--single-transaction'],
 	  on_error_die => 1)
   print "Sleep timed out" if $timed_out;
@@ -538,8 +538,11 @@ sub append_conf
 =item $node->backup(backup_name)
 
 Create a hot backup with B<pg_basebackup> in subdirectory B<backup_name> of
-B<< $node->backup_dir >>, including the WAL. WAL files
-fetched at the end of the backup, not streamed.
+B<< $node->backup_dir >>, including the WAL.
+
+By default, WAL files are fetched at the end of the backup, not streamed.
+You can adjust that and other things by passing an array of additional
+B<pg_basebackup> command line options in the keyword parameter backup_options.
 
 You'll have to configure a suitable B<max_wal_senders> on the
 target server since it isn't done by default.
@@ -548,7 +551,7 @@ target server since it isn't done by default.
 
 sub backup
 {
-	my ($self, $backup_name) = @_;
+	my ($self, $backup_name, %params) = @_;
 	my $backup_path = $self->backup_dir . '/' . $backup_name;
 	my $name        = $self->name;
 
@@ -556,7 +559,8 @@ sub backup
 	TestLib::system_or_bail(
 		'pg_basebackup', '-D', $backup_path, '-h',
 		$self->host,     '-p', $self->port,  '--checkpoint',
-		'fast',          '--no-sync');
+		'fast',          '--no-sync',
+		@{ $params{backup_options} });
 	print "# Backup finished\n";
 	return;
 }
@@ -1406,9 +1410,9 @@ If given, it must be an array reference containing additional parameters to B<ps
 e.g.
 
 	my ($stdout, $stderr, $timed_out);
-	my $cmdret = $node->psql('postgres', 'SELECT pg_sleep(60)',
+	my $cmdret = $node->psql('postgres', 'SELECT pg_sleep(600)',
 		stdout => \$stdout, stderr => \$stderr,
-		timeout => 30, timed_out => \$timed_out,
+		timeout => 180, timed_out => \$timed_out,
 		extra_params => ['--single-transaction'])
 
 will set $cmdret to undef and $timed_out to a true value.
@@ -1652,19 +1656,22 @@ sub poll_query_until
 
 	$expected = 't' unless defined($expected);    # default value
 
-	my $cmd = [ 'psql', '-XAt', '-c', $query, '-d', $self->connstr($dbname) ];
+	my $cmd = [ 'psql', '-XAt', '-d', $self->connstr($dbname) ];
 	my ($stdout, $stderr);
 	my $max_attempts = 180 * 10;
 	my $attempts     = 0;
 
 	while ($attempts < $max_attempts)
 	{
-		my $result = IPC::Run::run $cmd, '>', \$stdout, '2>', \$stderr;
+		my $result = IPC::Run::run $cmd, '<', \$query,
+		  '>', \$stdout, '2>', \$stderr;
 
 		$stdout =~ s/\r\n/\n/g if $Config{osname} eq 'msys';
 		chomp($stdout);
+		$stderr =~ s/\r\n/\n/g if $Config{osname} eq 'msys';
+		chomp($stderr);
 
-		if ($stdout eq $expected)
+		if ($stdout eq $expected && $stderr eq '')
 		{
 			return 1;
 		}
@@ -1677,8 +1684,6 @@ sub poll_query_until
 
 	# The query result didn't change in 180 seconds. Give up. Print the
 	# output from the last attempt, hopefully that's useful for debugging.
-	$stderr =~ s/\r\n/\n/g if $Config{osname} eq 'msys';
-	chomp($stderr);
 	diag qq(poll_query_until timed out executing this query:
 $query
 expecting this output:

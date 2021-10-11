@@ -3,11 +3,11 @@
 .\"    Author: The PostgreSQL Global Development Group
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
 .\"      Date: 2021
-.\"    Manual: PostgreSQL 13.3 Documentation
-.\"    Source: PostgreSQL 13.3
+.\"    Manual: PostgreSQL 13.4 Documentation
+.\"    Source: PostgreSQL 13.4
 .\"  Language: English
 .\"
-.TH "ALTER TABLE" "7" "2021" "PostgreSQL 13.3" "PostgreSQL 13.3 Documentation"
+.TH "ALTER TABLE" "7" "2021" "PostgreSQL 13.4" "PostgreSQL 13.4 Documentation"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -326,7 +326,7 @@ bytea
 values run faster, at the penalty of increased storage space\&. Note that
 SET STORAGE
 doesn\*(Aqt itself change anything in the table, it just sets the strategy to be pursued during future table updates\&. See
-Section\ \&68.2
+Section\ \&69.2
 for more information\&.
 .RE
 .PP
@@ -699,9 +699,14 @@ constraint is present\&. Also like the scan of the new partition, it is always s
 .sp
 Attaching a partition acquires a
 SHARE UPDATE EXCLUSIVE
-lock on the parent table, in addition to
+lock on the parent table, in addition to the
 ACCESS EXCLUSIVE
-locks on the table to be attached and on the default partition (if any)\&.
+locks on the table being attached and on the default partition (if any)\&.
+.sp
+Further locks must also be held on all sub\-partitions if the table being attached is itself a partitioned table\&. Likewise if the default partition is itself a partitioned table\&. The locking of the sub\-partitions can be avoided by adding a
+CHECK
+constraint as described in
+Section\ \&5.11.2.2\&.
 .RE
 .PP
 DETACH PARTITION \fIpartition_name\fR
